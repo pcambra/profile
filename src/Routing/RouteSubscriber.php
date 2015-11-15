@@ -53,25 +53,13 @@ class RouteSubscriber extends RouteSubscriberBase {
     foreach ($this->entityManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
       $route = new Route(
         "/user/{user}/edit/user_profile_form/{profile_type}",
-        array(
-          '_controller' => '\Drupal\profile\Controller\ProfileController::userProfileForm',
-        ),
-        array(
-          '_profile_access_check' =>  'add',
-        ),
-        array(
-          'parameters' => array(
-            'user' => array(
-              'type' => 'entity:user',
-            ),
-            'profile_type' => array(
-              'type' => 'entity:profile_type',
-            ),
-            $profile_type_id => array(
-              'type' => 'profile:' . $profile_type_id,
-            ),
-          ),
-        )
+        ['_controller' => '\Drupal\profile\Controller\ProfileController::userProfileForm'],
+        ['_profile_access_check' =>  'add'],
+        ['parameters' => [
+          'user' => ['type' => 'entity:user'],
+          'profile_type' => ['type' => 'entity:profile_type'],
+          $profile_type_id => ['type' => 'profile:' . $profile_type_id],
+        ]]
       );
       $collection->add("entity.profile.type.$profile_type_id.user_profile_form", $route);
     }
