@@ -9,7 +9,6 @@ namespace Drupal\profile\Routing;
 
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Routing\RouteSubscriberBase;
-use Drupal\Core\Routing\RoutingEvents;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -49,26 +48,16 @@ class RouteSubscriber extends RouteSubscriberBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, $base_plugin_id) {
-    return new static(
-      $container->get('entity.manager'),
-      $container->get('current_user')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   protected function alterRoutes(RouteCollection $collection) {
+    $account = $this->account->getAccount();
     foreach ($this->entityManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
       $route = new Route(
         "/user/{user}/edit/user_profile_form/{profile_type}",
         array(
-          'profile_type' => NULL,
           '_controller' => '\Drupal\profile\Controller\ProfileController::userProfileForm',
         ),
         array(
-          '_profile_access_check' =>  'add'
+          '_profile_access_check' =>  'add',
         ),
         array(
           'parameters' => array(
