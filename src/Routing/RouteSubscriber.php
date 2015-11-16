@@ -7,7 +7,7 @@
 
 namespace Drupal\profile\Routing;
 
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
@@ -26,22 +26,22 @@ class RouteSubscriber extends RouteSubscriberBase {
   protected $account;
 
   /**
-   * The entity manager service.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * Constructs a new RouteSubscriber object.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param \Drupal\Core\Session\AccountInterface $account;
+   * @param \Drupal\Core\Session\AccountInterface $account ;
    *   Current drupal account.
    */
-  public function __construct(EntityManagerInterface $entity_manager, AccountInterface $account) {
-    $this->entityManager = $entity_manager;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountInterface $account) {
+    $this->entityTypeManager = $entity_type_manager;
     $this->account = $account;
   }
 
@@ -50,7 +50,7 @@ class RouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     $account = $this->account->getAccount();
-    foreach ($this->entityManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
+    foreach ($this->entityTypeManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
       $route = new Route(
         "/user/{user}/edit/user_profile_form/{profile_type}",
         ['_controller' => '\Drupal\profile\Controller\ProfileController::userProfileForm'],

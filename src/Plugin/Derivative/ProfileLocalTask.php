@@ -8,7 +8,7 @@
 namespace Drupal\profile\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -18,20 +18,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ProfileLocalTask extends DeriverBase implements ContainerDeriverInterface {
 
   /**
-   * The entity manager service.
+   * The entity type manager.
    *
-   * @var \Drupal\Core\Entity\EntityManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityManager;
+  protected $entityTypeManager;
 
   /**
    * Constructs a new ProfileAddLocalTask.
    *
-   * @param \Drupal\Core\Entity\EntityManagerInterface $entity_manager
-   *   The entity manager.
+   * @param $base_plugin_definition
+   *   The base plugin definition.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct($base_plugin_definition, EntityManagerInterface $entity_manager) {
-    $this->entityManager = $entity_manager;
+  public function __construct($base_plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -40,7 +42,7 @@ class ProfileLocalTask extends DeriverBase implements ContainerDeriverInterface 
   public static function create(ContainerInterface $container, $base_plugin_definition) {
     return new static(
       $base_plugin_definition,
-      $container->get('entity.manager')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -50,7 +52,7 @@ class ProfileLocalTask extends DeriverBase implements ContainerDeriverInterface 
   public function getDerivativeDefinitions($base_plugin_definition) {
     $this->derivatives = [];
 
-    foreach ($this->entityManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
+    foreach ($this->entityTypeManager->getStorage('profile_type')->loadMultiple() as $profile_type_id => $profile_type) {
       $this->derivatives["profile.type.$profile_type_id"] = [
           'title' => $profile_type->label(),
           'route_name' => "entity.profile.type.$profile_type_id.user_profile_form",
